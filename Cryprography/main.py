@@ -1,109 +1,53 @@
-import timeit
-import random
-import math
+# Function to find the greatest common divisor (GCD) of two numbers
+def gcd(a, b):
+    while b:
+        a, b = b, a % b
+    return a
 
-def euclidean_gcd(u, v):
-    #this algorithm divides the greastes one by the lowest one untill v becomes 0
-    while v:
-        u, v = v, u % v
-    return abs(u)
+# Function to check if a number is prime
+def is_prime(n):
+    if n <= 1:
+        return False
+    if n <= 3:
+        return True
+    if n % 2 == 0 or n % 3 == 0:
+        return False
+    i = 5
+    while i * i <= n:
+        if n % i == 0 or n % (i + 2) == 0:
+            return False
+        i += 6
+    return True
 
-def factorization_gcd(u, v) :
-    ## This function calculates the GCD of two numbers using prime factorization
-    def prime_factors(n) :
-        #finds the prime factors for u and v
-        factors = set ()
-        while n % 2 == 0 :
-            factors.add (2)
-            n //= 2
-        for i in range (3, int (math.sqrt (n)) + 1, 2) :
-            while n % i == 0 :
-                factors.add (i)
-                n //= i
-        if n > 2 :
-            factors.add (n)
-        return factors
+# Function to check if a number is a Carmichael candidate
+def is_carmichael_candidate(n):
+    # Carmichael candidates must be odd, composite, and square-free.
+    if n % 2 == 0 or is_prime(n):
+        return False
 
-    factors_u = prime_factors (u)
-    factors_v = prime_factors (v)
+    for a in range(2, n):
+        if gcd(a, n) != 1:
+            continue
+        if pow(a, n - 1, n) != 1:
+            return False
 
-    #finds the common factors between u and v
-    common_factors = factors_u.intersection (factors_v)
+    return True
 
-    gcd = 1
-    #multiplies the untill it gets the greates commom divisor
-    for factor in common_factors :
-        gcd *= factor
+# Function to find Carmichael numbers up to a given bound
+def find_carmichael_numbers(bound):
+    carmichael_numbers = []
+    for n in range(561, bound + 1):  # 561 is the smallest known Carmichael number
+        if is_carmichael_candidate(n):
+            carmichael_numbers.append(n)
+    return carmichael_numbers
 
-    return gcd
+if __name__ == "__main__":
+    upper_bound = int(input("Enter the upper bound: "))
+    carmichael_numbers = find_carmichael_numbers(upper_bound)
 
-
-def lehmer_gcd(u, v) :
-    # Ensure both u and v are non-negative
-    #au + cv = gcd(u, v)
-    if u < 0 :
-        u = -u
-    if v < 0 :
-        v = -v
-
-    # Check if one of the numbers is zero; return the other one as the GCD
-    if u == 0 :
-        return v
-    if v == 0 :
-        return u
-
-    # Initialize variables for Bézout coefficients
-    a = 1
-    b = 0
-    c = 0
-    d = 1
-
-    # Start the extended Euclidean algorithm
-    while v != 0 :
-        # Calculate the quotient q
-        q = u // v
-
-        # Update u and v, similar to the standard Euclidean algorithm
-        u, v = v, u - q * v
-
-        # Update Bézout coefficients a, b, c, and d
-        a, b = b, a - q * b
-        c, d = d, c - q * d
-
-    # Return the GCD and the Bézout coefficients (a and c)
-    return u, a, c
-
-
-# Function to measure the execution time of a GCD algorithm with given inputs
-def measure_execution_time(algorithm, u, v):
-    return timeit.timeit(lambda: algorithm(u, v), number=10000)
-# Generate 10 pairs of random integers
-input_values = [(random.randint(1, 1000), random.randint(1, 1000)) for _ in range(10)]
-
-# Measure execution times for each algorithm with different inputs
-euclidean_times = [measure_execution_time(euclidean_gcd, u, v) for u, v in input_values]
-steins_times = [measure_execution_time(factorization_gcd, u, v) for u, v in input_values]
-lehmer_times = [measure_execution_time(lehmer_gcd, u, v) for u, v in input_values]
-
-# Print the execution times
-print("Execution times (in seconds) for 10 different inputs:")
-print("Euclidean GCD:")
-for i, (u, v) in enumerate(input_values):
-    print(u, v)
-    print(euclidean_gcd(u, v))
-    print(f"Input {i + 1}: {euclidean_times[i]:.6f} seconds")
-
-print("Factorization GCD:")
-for i, (u, v) in enumerate(input_values):
-    print(u, v)
-    print(factorization_gcd(u,v))
-    print(f"Input {i + 1}: {steins_times[i]:.6f} seconds")
-
-print("Lehmer's GCD:")
-for i, (u, v) in enumerate(input_values):
-    print(u, v)
-    print(lehmer_gcd(u,v))
-    print(f"Input {i + 1}: {lehmer_times[i]:.6f} seconds")
-
-
-
+    if carmichael_numbers:
+        print("Carmichael numbers less than or equal to", upper_bound, "are:")
+        for number in carmichael_numbers:
+            print(number)
+    else:
+        print("No Carmichael numbers found in the specified range.")
