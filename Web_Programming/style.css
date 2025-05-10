@@ -1,0 +1,23 @@
+.thumbnails {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.thumbnails img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    cursor: pointer;
+    border: 2px solid #ddd;
+}
+
+.thumbnails img:hover {
+    border-color: #555;
+}
+
+.full-preview img {
+    max-width: 600px;
+    max-height: 400px;
+    border: 1px solid #ccc;
+}
