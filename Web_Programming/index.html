@@ -1,57 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>Highlight Word on Double Click</title>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <style>
-    .highlight {
-      background-color: yellow;
-    }
-  </style>
+    <title>Simple Thumbnail Viewer</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<p>
-  This is a simple paragraph. Try double-clicking on any word in this paragraph. For example, double-click on the word "paragraph" to see all occurrences highlighted.
-</p>
-
-<script>
-  $(document).ready(function () {
-    function escapeRegExp(string) {
-      return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    }
-
-    function highlightWord(word) {
-      if (!word || word.trim() === '') return;
-
-      // Remove previous highlights
-      $('body').find('.highlight').each(function () {
-        $(this).replaceWith($(this).text());
-      });
-
-      const escapedWord = escapeRegExp(word);
-      const regex = new RegExp('\\b' + escapedWord + '\\b', 'gi');
-
-      $('body').contents().each(function recursiveHighlight() {
-        if (this.nodeType === 3) {
-          const text = this.nodeValue;
-          if (regex.test(text)) {
-            const newHtml = text.replace(regex, function (match) {
-              return '<span class="highlight">' + match + '</span>';
-            });
-            $(this).replaceWith(newHtml);
-          }
-        } else if (this.nodeType === 1 && !$(this).is('script, style')) {
-          $(this).contents().each(recursiveHighlight);
-        }
-      });
-    }
-
-    $(document).on('dblclick', function () {
-      const selectedText = window.getSelection().toString().trim();
-      highlightWord(selectedText);
-    });
-  });
-</script>
+<div class="thumbnails">
+    <!-- Thumbnails will appear here -->
+</div>
+<div class="full-preview">
+    <img id="fullImage">
+</div>
+<script src="script.js"></script>
 </body>
 </html>
